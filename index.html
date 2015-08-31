@@ -41,11 +41,13 @@
 
 <h3 id="A_simple_example">A simple example</h3>
 
-<p>To help explain Firefox OS add-on basics, we'll introduce a simple example that adds a banner to every app installed on the phone, which can be clicked to dismiss it.</p>
+<p>To help explain Firefox OS add-on basics, we'll introduce a simple example that adds a banner the system app, which can be clicked to dismiss it.</p>
 
-<p>[INSERT SCREENSHOT]</p>
+<p><img src="add-on-screenshot.png" alt="firefox os screenshot showing add-on banner" style="display: block;width: 500px;margin: 0 auto"></p>
 
 <p>This is very basic and trivial, but it gives you enough to get started. You can check out the code on Github, and install the add-on on your Firefox OS device by going to the index page and clicking the install button.</p>
+
+<p>Note: Depending on the nature of your add-on, you might have to restart your phone for it to take effect.</p>
 
 <p>Be aware that Firefox OS add-ons can do a lot more than what we've got listed here. The WebExtensions documentation will have more information added as time goes on.</p>
 
@@ -187,6 +189,8 @@ function initialize() {
 
 <h3 id="manifest.json">manifest.json</h3>
 
+<p>Important: The <code>matches</code> field does not currently havethe correct logic implemented (see {{bug("1196386")}} for implementation progress.) For the moment, you are limited to setting add-ons to affect individual apps, as shown below.</p>
+
 <p>You'll notice that we've got two manifest-type files inside our sample add-on directory. The first of these — manifest.json — follows the Chrome-style manifest style, and is placed inside the extensions package. It can contain a large variety of instructions (see <a href="https://developer.chrome.com/extensions/manifest">Chrome Manifest File Format</a>), but for now we're just going to concentrate on a simple subset:</p>
 
 <pre>{
@@ -196,7 +200,7 @@ function initialize() {
     "version": "1.0",
     "author": "Chris Mills",
     "content_scripts": [{
-      "matches": ["*"],
+      "matches": ["app://system.gaiamobile.org/index.html"],
       "css": ["css/style.css"],
       "js": ["js/index.js"]
     }],
@@ -207,7 +211,7 @@ function initialize() {
 
 <p>Most of these fields are pretty self-explanatory, but we'll cover the last few.</p>
 
-<p>First of all, the content_scripts field references the code that will be injected into apps that the add-on is applied to — you'll see that we are providing the path to the CSS and JavaScript files in the css and js fields. The matches field contains a pattern that specifies which apps the code will be injected into. This pattern can take a number of different forms (see <a href="https://developer.chrome.com/extensions/match_patterns">Chrome Match Patterns</a>), but for now we are simply specifying *, which means "all apps".</p>
+<p>First of all, the content_scripts field references the code that will be injected into apps that the add-on is applied to — you'll see that we are providing the path to the CSS and JavaScript files in the css and js fields. The matches field contains a pattern that specifies which apps the code will be injected into. This pattern can take a number of different forms (see <a href="https://developer.chrome.com/extensions/match_patterns">Chrome Match Patterns</a>), but for now we are simply specifying <code>app://system.gaiamobile.org/index.html</code>, which causes it to affect the system app.</p>
 
 <p>Note: You can reference multiple scripts and stylesheets by simply including multiple items in the arrays, for example <code>"css": ["css/style.css", "css/more.css"]</code>.</p>
 
