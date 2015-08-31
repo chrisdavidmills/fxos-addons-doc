@@ -43,7 +43,7 @@
 
 <p>To help explain Firefox OS add-on basics, we'll introduce a simple example that adds a banner the system app, which can be clicked to dismiss it.</p>
 
-<p><img src="add-on-screenshot.png" alt="firefox os screenshot showing add-on banner" style="display: block;width: 500px;margin: 0 auto"></p>
+<p><img src="add-on-screenshot.png" alt="firefox os screenshot showing add-on banner" style="display: block;width: 250px;margin: 0 auto"></p>
 
 <p>This is very basic and trivial, but it gives you enough to get started. You can check out the code on Github, and install the add-on on your Firefox OS device by going to the index page and clicking the install button.</p>
 
@@ -296,9 +296,21 @@ function install(url) {
 
 <p>Refer to an existing add-on like <a href="https://github.com/mikehenrty/fxos-shb-plus/tree/gh-pages">Homebar Plus</a> as an example.</p>
 
-<h2 id="Enablingdisabling_add-ons">Enabling/disabling add-ons</h2 >
+<h2 id="Add-on_settings">Add-on settings</h2>
 
-<p>By default, add-ons are enabled after installation. They can be enabled/disabled via <em>Settings app &gt; Add-ons</em>, or programmatically using the <code><a href="http://mxr.mozilla.org/mozilla-central/source/dom/webidl/Apps.webidl#135">navigator.mozApps.mgmt.setEnabled()</a></code> function.</p>
+<p>You can control the add-ons on your phone by going to <em>Settings app &gt; Add-ons</em>; in here you'll find a list of your installed add-ons, and you can tap each entry to see more information about (and control options for) each add-on.</p>
+
+<p style="width: 520px;margin: 0 auto"><img src="add-on-settings-screen.png" alt="firefox os screenshot showing a list of installed add-ons in the settings app" style="width: 250px;margin-right: 20px"><img src="individual-add-on-settings-page.png" alt="information screen for an individual addon, with a list of apps this add-on affects, and controls to disable and delete the add-on" style="width: 250px"></p>
+
+<h3 id="Enablingdisabling_and_deleting_add-ons">Enabling/disabling and deleting add-ons</h3>
+
+<p>By default, add-ons are enabled after installation. They can be enabled/disabled via the checkbox at the top of each individual app's page (found under <em>Settings app &gt; Add-ons</em>), or programmatically using the <code><a href="http://mxr.mozilla.org/mozilla-central/source/dom/webidl/Apps.webidl#135">navigator.mozApps.mgmt.setEnabled()</a></code> function.</p>
+
+<p>You cna delete an add-on entirely by tapping the "Delete" button found on individual app pages.</p>
+
+<h3 id="Apps_affected_by_add-ons">Apps affected by add-ons</h3>
+
+<p>You'll also notice that in the page for each individual add-on there is a section that lists which apps are affected by that add-on. Currently this doesn't seem to work (it always lists "This add-on does not affect any installed apps".) This should be fixed soon.</p>
 
 <div class="note">
 <p><strong>Note</strong>: There is currently a bug requiring the <code>network.disable.ipc.security</code> to be disabled for extensions to work. This can be done manually, or by enabling <a href="/en-US/Firefox_OS/Developer_Mode">Developer Mode</a>. This should be fixed soon.</p>
