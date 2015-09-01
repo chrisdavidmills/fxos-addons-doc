@@ -37,13 +37,11 @@
 
 <h3 id="A_simple_example">A simple example</h3>
 
-<p>To help explain Firefox OS add-on basics, we'll introduce a simple example that adds a banner the system app, which can be clicked to dismiss it.</p>
+<p>To help explain Firefox OS add-on basics, we'll introduce a simple example that adds a banner to the system app, which can be clicked to dismiss it.</p>
 
 <p><img src="add-on-screenshot.png" alt="firefox os screenshot showing add-on banner" style="display: block;width: 250px;margin: 0 auto"></p>
 
-<p>This is very basic and trivial, but it gives you enough to get started. You can check out the code on Github, and install the add-on on your Firefox OS device by cloning the repo locally and using {{anch("WebIDE")}}.</p>
-
-<p>Note: If your add-on affect the system or homescreen apps, you will have to restart your phone for it to take effect. This includes when you disable then re-enable the app.</p>
+<p>This is very basic and trivial, but it gives you enough to get started. You can check out the code on Github, and install the add-on on your Firefox OS device by cloning the repo locally and using WebIDE (see the {{anch("Testing your add-on using WebIDE")}} section.) Eventually you'll be able to distribute add-ons using the Firefox Marketplace.</p>
 
 <p>Be aware that Firefox OS add-ons can do a lot more than what we've got listed here. The WebExtensions documentation will have more information added as time goes on.</p>
 
@@ -131,6 +129,10 @@
 
 <p>You'll notice that the <code>icons</code> field is included here, the same as it is in {{anch("manifest.json")}} — <code>update.webapp</code> is the only place you <em>need</em> to have the icons information at the moment, but we'd recommend you include it in both places for now, just in case things change. The <code>icons</code> field points to the add-on icon so it can be used inside the Gaia Settings app, and the Firefox Marketplace when it starts to host add-ons.</p>
 
+<h3 id="Including_an_icon">Including an icon</h3>
+
+<p>You need to include at least one icon and reference it from your manifest, otherwise the manifest doesn't validate. See <a href="https://developer.mozilla.org/en-US/Apps/Build/Manifest#icons">the Manifest reference icons section</a> for more information.</p>
+
 <h3 id="CSS">CSS</h3>
 
 <p>There is nothing special about the CSS included in the example. The only thing to bear in mind is that you should make sure your add-on classnames and selectors do not conflict with any of the existing CSS in the app(s) it is applied to.</p>
@@ -180,11 +182,11 @@ function initialize() {
 
 <h4 id="Preventing_multiple_injections">Preventing multiple injections</h4>
 
-<p>Finally, to prevent an add-on from being injected into a single app instance multiple times, you can set a DOM attribute denoting that the add-on has already been injected. If it's detected as being already set on injection, the add-on should abort its initialization process. We use a <code>helloWorldInitialized</code> attribute in our code, like this:</p>
+<p>Finally, to prevent an add-on from being injected into a single app instance multiple times, you should check whether your add-on is already present, like this:</p>
 
 <pre class="brush: js">
 function initialize() {
-  if (document.documentElement.dataset.helloWorldInitialized) {
+  if (document.querySelector('.fxos-banner')) {
     // Already injected, abort.
     return;
   } else {
@@ -201,17 +203,14 @@ function initialize() {
     closeBtn.textContent = 'X';
     bannerText.textContent = 'Wow, you have an extension installed!';
 
-    document.documentElement.dataset.helloWorldInitialized = true;
-
     closeBtn.onclick = function() {
       fxosBanner.parentNode.removeChild(fxosBanner);
-      document.documentElement.dataset.helloWorldInitialized = false;
     }
   }
 }
 </pre>
 
-<p>Note how clicking the button to remove the banner sets the <code>helloWorldInitialized</code> attribute back to <code>false</code> — if the user cleared the banner last time; we want to show it to them again! (evil marketing techniques never die.)</p>
+<p>So here we are using <code>if (document.querySelector('.fxos-banner'))</code> to check whether the example banner already exists. If so, then we return out of the function. If not, then the <code>querySelector()</code> method returns <code>null</code>, and we run the code block that creates the banner.</p>
 
 <h4 id="App_management_functions_in_add-ons">App management functions in add-ons</h4>
 
@@ -228,11 +227,6 @@ function initialize() {
   }
 };
 </pre>
-
-
-<h3 id="Including_an_icon">Including an icon</h3>
-
-<p>You need to include at least one icon and reference it from your manifest, otherwise the manifest doesn't validate. See <a href="https://developer.mozilla.org/en-US/Apps/Build/Manifest#icons">the Manifest reference icons section</a> for more information.</p>
 
 <h3 id="extension.zip">extension.zip</h3>
 
@@ -259,25 +253,7 @@ function initialize() {
 
 <p>So the <code>manifest.json</code> file sits inside the archive, and serves to reference the files to be injected and specify which apps to affect.</p>
 
-<h2 id="Installation">Installing and distributing add-ons</h2>
-
-<p>Add-ons are packaged just like any other app, therefore they can be installed in the same ways. For example, if you wanted to distribute your own add-on, you could use some code like the block below to allow people to install your add-on from a web page. The code uses the <code>installPackage()</code> method to install the add-on. In terms of installation, it is effectively a packaged app:</p>
-
-<pre>var installBtn = document.querySelector('button');
-
-installBtn.onclick = function() {
-  install('update.webapp')
-}
-
-function install(url) {
-  navigator.mozApps.installPackage('https://chrisdavidmills.github.io/simple-addon/' + url);
-}</pre>
-
-<p>Bear in mind however that add-ons need privileged permission set in the manifest; they need to be served via a marketplace, sideloaded or installed while in developer mode, etc, although once installed however you don't need any special privileges to apply them to apps. But because of this, we'd recommend waiting until the Firefox Marketplace starts to host add-ons, and distributing them from there.</p>
-
-<p>You are free to test add-ons using the WebIDE tool, as explained below.</p>
-
-<h3 id="WebIDE">WebIDE</h3>
+<h3 id="Testing_your_add-on_using_WebIDE">Testing your add-on using WebIDE</h3>
 
 <p>Mozilla's WebIDE tool is available in Firefox desktop by default. To use it for installing add-ons on your phone, follow the steps listed below:</p>
 
@@ -293,7 +269,7 @@ function install(url) {
   <li>Providing there are no warnings or error reported, you can install your add-on on the device using the "Play" button in the center ("Install and Run").</li>
 </ol>
 
-<p>Your add-on should now be installed and achivated immediately. If it affects the systems app, you will need to restart the phone to see it take effect.</p>
+<p>Your add-on should now be installed and achivated immediately.</p>
 
 <h2 id="Add-on_settings">Add-on settings</h2>
 
@@ -309,7 +285,7 @@ function install(url) {
 
 <h3 id="Apps_affected_by_add-ons">Apps affected by add-ons</h3>
 
-<p>You'll also notice that in the page for each individual add-on there is a section that lists which apps are affected by that add-on. Currently this doesn't seem to work (it always lists "This add-on does not affect any installed apps".) This should be fixed soon.</p>
+<p>You'll also notice that in the page for each individual add-on there is a section that lists which apps are affected by that add-on. Currently this doesn't seem to work (it always lists "This add-on does not affect any installed apps".) This should be fixed soon (see {{Bug(1196386)}} for progress.)</p>
 
 <div class="note">
 <p><strong>Note</strong>: There is currently a bug requiring the <code>network.disable.ipc.security</code> to be disabled for extensions to work. This can be done manually, or by enabling <a href="/en-US/Firefox_OS/Developer_Mode">Developer Mode</a>. This should be fixed soon.</p>
